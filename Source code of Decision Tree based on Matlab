@@ -1,5 +1,5 @@
-Decision Tree Run Results
-1. code:
+% Decision Tree Run Results
+% source code:
 % There are already input variables input and target variables target
 % Set up 50% cross validation
 cv = cvpartition(size(input, 1), 'KFold', 5);
