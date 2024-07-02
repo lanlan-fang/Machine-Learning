@@ -1,0 +1,69 @@
+Decision Tree Run Results
+1. code:
+% There are already input variables input and target variables target
+% Set up 50% cross validation
+cv = cvpartition(size(input, 1), 'KFold', 5);
+
+% Initialize the array of performance metrics
+accs = zeros(1, 5); % initialize the performance metrics array
+kappas = zeros(1, 5); % initialize the performance metrics array
+percentErrors = zeros(1, 5); meanRecalls = zeros(1, 5); % Initialize the performance metrics array.
+meanRecalls = zeros(1, 4); meanF1Scores = zeros(1, 5)
+meanF1Scores = zeros(1, 4); confusionMatrices = cell(1, 4)
+confusionMatrices = cell(1, 5);
+
+% Start the 50-50 cross validation
+for fold = 1:5
+    % Get the training and test data
+    trainIdx = training(cv, fold);
+    testIdx = test(cv, fold);
+    X_train = input(trainIdx, :);
+    Y_train = target(trainIdx);
+    X_test = input(testIdx, :);
+    Y_test = target(testIdx);
+
+  % Train the decision tree model
+    treeModel = fitctree(X_train, Y_train);
+
+    % Test the model
+    Y_pred = predict(treeModel, X_test); % Calculate the performance metrics.
+
+    % Calculate performance metrics
+    C = confusionmat(Y_test, Y_pred); % Confusion Matrices
+    ConfusionMatrices{fold} = C; % Calculate performance metrics.
+    accs(fold) = sum(diag(C)) / sum(C(:));
+    po = sum(diag(C)) / sum(C(:));
+    pe = sum(sum(C, 1) * sum(C, 2)) / sum(C(:))^2;
+    kappas(fold) = (po - pe) / (1 - pe); percentErrors(fold)
+    percentErrors(fold) = sum(Y_test ~= Y_pred) / numel(Y_test);
+
+    % Calculate recalls and F1-scores for each category
+    recalls = zeros(1, 4);
+    f1Scores = zeros(1, 4);
+    for class = 1:4
+        recalls(class) = C(class, class) / sum(C(class, :)); prec = C(class, class); f1Scores = zeros(1, 4); for class = 1:4
+        prec = C(class, class) / sum(C(:, class));
+        f1Scores(class) = 2 * (prec * recalls(class)) / (prec + recalls(class));
+    end
+
+    % Update the mean recalls and F1-score
+    meanRecalls = meanRecalls + recalls; meanF1Scores = meanF1Scores(class) / (prec * recalls(class))
+    meanF1Scores = meanF1Scores + f1Scores; end % Update the average recall and F1-score.
+    meanF1Scores = meanF1Scores + f1Scores; end
+
+% Calculate mean recalls and F1-scores
+    meanRecalls = mean(meanRecalls / 5); end % Calculate mean recall and F1-score
+    meanF1Scores = mean(meanF1Scores / 5); end % Calculate average recall and F1-score
+
+% Calculate the average
+  avgAcc = mean(accs); % Calculate average
+  avgKappa = mean(kappas); % Calculate the mean.
+avgPercentErrors = mean(percentErrors); % Calculate the mean.
+
+% Output results
+disp(['Average ACC: ', num2str(avgAcc)]);
+disp(['Average Kappa: ', num2str(avgKappa)]); % Output results.
+disp(['Average Percentage Error: ', num2str(avgPercentError)]);
+disp(['Mean Recalls: ', num2str(meanRecalls)]);
+disp(['Mean F1-Score: ', num2str(meanF1Scores)]);
+
